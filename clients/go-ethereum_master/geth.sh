@@ -57,36 +57,38 @@ if [ "$HIVE_NODETYPE" == "light" ]; then
 	FLAGS="$FLAGS --light"
 fi
 
-# Override any chain configs in the go-ethereum specific way
-chainconfig="{}"
-if [ "$HIVE_FORK_HOMESTEAD" != "" ]; then
-	chainconfig=`echo $chainconfig | jq ". + {\"homesteadBlock\": $HIVE_FORK_HOMESTEAD}"`
-fi
-if [ "$HIVE_FORK_DAO_BLOCK" != "" ]; then
-	chainconfig=`echo $chainconfig | jq ". + {\"daoForkBlock\": $HIVE_FORK_DAO_BLOCK}"`
-fi
-if [ "$HIVE_FORK_DAO_VOTE" == "0" ]; then
-	chainconfig=`echo $chainconfig | jq ". + {\"daoForkSupport\": false}"`
-fi
-if [ "$HIVE_FORK_DAO_VOTE" == "1" ]; then
-	chainconfig=`echo $chainconfig | jq ". + {\"daoForkSupport\": true}"`
-fi
+if [ "$HIVE_USE_GENESIS_CONFIG" == ""]; then
 
-if [ "$HIVE_FORK_TANGERINE" != "" ]; then
-	chainconfig=`echo $chainconfig | jq ". + {\"eip150Block\": $HIVE_FORK_TANGERINE}"`
-fi
-if [ "$HIVE_FORK_SPURIOUS" != "" ]; then
-	chainconfig=`echo $chainconfig | jq ". + {\"eip158Block\": $HIVE_FORK_SPURIOUS}"`
-	chainconfig=`echo $chainconfig | jq ". + {\"eip155Block\": $HIVE_FORK_SPURIOUS}"`
-fi
-if [ "$HIVE_FORK_BYZANTIUM" != "" ]; then
-	chainconfig=`echo $chainconfig | jq ". + {\"byzantiumBlock\": $HIVE_FORK_BYZANTIUM}"`
-fi
-if [ "$HIVE_FORK_CONSTANTINOPLE" != "" ]; then
-	chainconfig=`echo $chainconfig | jq ". + {\"constantinopleBlock\": $HIVE_FORK_CONSTANTINOPLE}"`
-fi
-genesis=`cat /genesis.json` && echo $genesis | jq ". + {\"config\": $chainconfig}" > /genesis.json
+	# Override any chain configs in the go-ethereum specific way
+	chainconfig="{}"
+	if [ "$HIVE_FORK_HOMESTEAD" != "" ]; then
+		chainconfig=`echo $chainconfig | jq ". + {\"homesteadBlock\": $HIVE_FORK_HOMESTEAD}"`
+	fi
+	if [ "$HIVE_FORK_DAO_BLOCK" != "" ]; then
+		chainconfig=`echo $chainconfig | jq ". + {\"daoForkBlock\": $HIVE_FORK_DAO_BLOCK}"`
+	fi
+	if [ "$HIVE_FORK_DAO_VOTE" == "0" ]; then
+		chainconfig=`echo $chainconfig | jq ". + {\"daoForkSupport\": false}"`
+	fi
+	if [ "$HIVE_FORK_DAO_VOTE" == "1" ]; then
+		chainconfig=`echo $chainconfig | jq ". + {\"daoForkSupport\": true}"`
+	fi
 
+	if [ "$HIVE_FORK_TANGERINE" != "" ]; then
+		chainconfig=`echo $chainconfig | jq ". + {\"eip150Block\": $HIVE_FORK_TANGERINE}"`
+	fi
+	if [ "$HIVE_FORK_SPURIOUS" != "" ]; then
+		chainconfig=`echo $chainconfig | jq ". + {\"eip158Block\": $HIVE_FORK_SPURIOUS}"`
+		chainconfig=`echo $chainconfig | jq ". + {\"eip155Block\": $HIVE_FORK_SPURIOUS}"`
+	fi
+	if [ "$HIVE_FORK_BYZANTIUM" != "" ]; then
+		chainconfig=`echo $chainconfig | jq ". + {\"byzantiumBlock\": $HIVE_FORK_BYZANTIUM}"`
+	fi
+	if [ "$HIVE_FORK_CONSTANTINOPLE" != "" ]; then
+		chainconfig=`echo $chainconfig | jq ". + {\"constantinopleBlock\": $HIVE_FORK_CONSTANTINOPLE}"`
+	fi
+	genesis=`cat /genesis.json` && echo $genesis | jq ". + {\"config\": $chainconfig}" > /genesis.json
+fi
 # Initialize the local testchain with the genesis state
 echo "Initializing database with genesis state..."
 /geth $FLAGS init /genesis.json
