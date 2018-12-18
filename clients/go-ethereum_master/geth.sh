@@ -77,6 +77,9 @@ if [ "$HIVE_USE_GENESIS_CONFIG" == ""]; then
 	if [ "$HIVE_FORK_TANGERINE" != "" ]; then
 		chainconfig=`echo $chainconfig | jq ". + {\"eip150Block\": $HIVE_FORK_TANGERINE}"`
 	fi
+	if [ "$HIVE_FORK_TANGERINE_HASH" != "" ]; then
+		chainconfig=`echo $chainconfig | jq ". + {\"eip150Hash\": $HIVE_FORK_TANGERINE_HASH}"`
+	fi
 	if [ "$HIVE_FORK_SPURIOUS" != "" ]; then
 		chainconfig=`echo $chainconfig | jq ". + {\"eip158Block\": $HIVE_FORK_SPURIOUS}"`
 		chainconfig=`echo $chainconfig | jq ". + {\"eip155Block\": $HIVE_FORK_SPURIOUS}"`
@@ -126,4 +129,5 @@ fi
 # Run the go-ethereum implementation with the requested flags
 echo "Running go-ethereum..."
 echo "$FLAGS"
+
 /geth $FLAGS  --verbosity=3 --nat=none --rpc --rpcaddr "0.0.0.0" --rpcapi "admin,debug,eth,miner,net,personal,shh,txpool,web3" --ws --wsaddr "0.0.0.0" --wsapi "admin,debug,eth,miner,net,personal,shh,txpool,web3" --wsorigins "*"
