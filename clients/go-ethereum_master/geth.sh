@@ -51,10 +51,10 @@ fi
 
 # Handle any client mode or operation requests
 if [ "$HIVE_NODETYPE" == "full" ]; then
-	FLAGS="$FLAGS --fast"
+	FLAGS="$FLAGS --syncmode fast "
 fi
 if [ "$HIVE_NODETYPE" == "light" ]; then
-	FLAGS="$FLAGS --light"
+	FLAGS="$FLAGS --syncmode light "
 fi
 
 if [ "$HIVE_USE_GENESIS_CONFIG" == ""]; then
